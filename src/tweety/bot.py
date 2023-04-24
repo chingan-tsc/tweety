@@ -188,7 +188,7 @@ class Twitter:
             for entry in r.json()['data']['threaded_conversation_with_injections_v2']['instructions'][0]['entries']:
                 if str(entry['entryId']).split("-")[0] == "tweet":
                     raw_tweet = entry['content']['itemContent']['tweet_results']['result']
-                    if raw_tweet['rest_id'] == str(identifier):
+                    if raw_tweet['rest_id'] == str(tweetId):
                         return Tweet(r, raw_tweet, self.request, True, False, True)
 
             raise InvalidTweetIdentifier()
