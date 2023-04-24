@@ -1,4 +1,6 @@
 import httpx as s
+import os
+
 from .exceptions_ import GuestTokenNotFound, UnknownError
 from .utils import custom_json
 from .builder import UrlBuilder
@@ -49,11 +51,19 @@ class Request:
     def perform_search(self, keyword, cursor, filter_):
         if keyword.startswith("#"):
             keyword = f"%23{keyword[1:]}"
-
+        
+        # Necessary when search queries have special/accented characters
+        keyword = keyword.encode('utf-8')
+        
         request_data = self.__builder.search(keyword, cursor, filter_)
         del request_data['headers']['content-type']
         request_data['headers']['referer'] = f"https://twitter.com/search?q={keyword}"
-
+        
+        # Search API now requires logging in, hence we inject cookie and CSRF token here
+        request_data['headers']['x-twitter-auth-type'] = 'OAuth2Session'
+        request_data['headers']['cookie'] = os.getenv('COOKIE')
+        request_data['headers']['x-csrf-token'] = os.getenv('X_CSRF_TOKEN')
+        
         response = self.__session.get(**request_data)
         return response
 
