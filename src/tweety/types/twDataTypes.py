@@ -283,7 +283,7 @@ class Tweet(dict):
     def _is_reply(original_tweet):
         tweet_keys = list(original_tweet.keys())
         required_keys = ["in_reply_to_status_id_str", "in_reply_to_user_id_str", "in_reply_to_screen_name"]
-        return any(x in tweet_keys and original_tweet[x] is True for x in required_keys)
+        return any(x in tweet_keys for x in required_keys)
 
     @staticmethod
     def _is_quoted(original_tweet):
