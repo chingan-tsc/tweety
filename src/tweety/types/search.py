@@ -56,8 +56,9 @@ class Search(dict):
                     pass
 
             self['tweets'] = self.tweets
-
-        self.is_next_page = self._get_cursor(response)
+    
+        # FIXME Temporarily disable pagination as its not working
+        self.is_next_page = False
         return thisObjects
 
     def _get_cursor(self, response):
