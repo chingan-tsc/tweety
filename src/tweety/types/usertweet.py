@@ -43,7 +43,7 @@ class UserTweets(dict):
                 tweets = self._get_tweet_content_key(entry)
                 for tweet in tweets:
                     try:
-                        _tweets.append(Tweet(response, tweet, self.http))
+                        _tweets.append(Tweet(response, tweet, self.http, get_reply=get_replies))
                     except:
                         traceback.print_exc()
                         pass
