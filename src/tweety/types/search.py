@@ -63,7 +63,12 @@ class Search(dict):
 
     def _get_cursor(self, response):
         if self.filter == "users":
-            for i in response.json()['timeline']['instructions'][-1]['addEntries']['entries']:
+            if response.json()['timeline']['instructions'][-1].get('addEntries'):
+                add_entries = response.json(
+                )['timeline']['instructions'][-1]['addEntries']
+            else:
+                add_entries = []
+            for i in add_entries['entries']:
                 if str(i['entryId']).split("-")[0] == "cursor":
                     if i['content']['operation']['cursor']['cursorType'] == "Bottom":
                         newCursor = i['content']['operation']['cursor']['value']
@@ -72,7 +77,12 @@ class Search(dict):
                         self.cursor = newCursor
                         return True
         else:
-            for i in response.json()['timeline']['instructions'][0]['addEntries']['entries']:
+            if response.json()['timeline']['instructions'][-1].get('addEntries'):
+                add_entries = response.json(
+                )['timeline']['instructions'][-1]['addEntries']
+            else:
+                add_entries = []
+            for i in add_entries['entries']:
                 try:
                     if i['content']['operation']:
                         if i['content']['operation']['cursor']['cursorType'] == "Bottom":
