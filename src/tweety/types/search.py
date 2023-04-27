@@ -49,7 +49,7 @@ class Search(dict):
             for tweet_id, raw_tweet in response.json()['globalObjects']['tweets'].items():
                 try:
                     raw_tweet['rest_id'], raw_tweet['core'] = tweet_id, users.get(str(raw_tweet['user_id']))
-                    tweet = Tweet(response, raw_tweet, self.http, False, True)
+                    tweet = Tweet(response, raw_tweet, self.http, False, True, True)
                     self.tweets.append(tweet)
                     thisObjects.append(tweet)
                 except:
@@ -57,8 +57,7 @@ class Search(dict):
 
             self['tweets'] = self.tweets
     
-        # FIXME Temporarily disable pagination as its not working
-        self.is_next_page = False
+        self.is_next_page = self._get_cursor(response)
         return thisObjects
 
     def _get_cursor(self, response):
@@ -72,7 +71,10 @@ class Search(dict):
                         self.cursor = newCursor
                         return True
         else:
-            for i in response.json()['timeline']['instructions'][0]['addEntries']['entries']:
+            # Sometimes instructions array will contain other operations than "addEntries" so we need to find it first
+            instruction = next(instruction for instruction in response.json()['timeline']['instructions'] if 'addEntries' in instruction)
+            
+            for i in instruction['addEntries']['entries']:
                 try:
                     if i['content']['operation']:
                         if i['content']['operation']['cursor']['cursorType'] == "Bottom":
