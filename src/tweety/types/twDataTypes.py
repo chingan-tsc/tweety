@@ -212,7 +212,10 @@ class Tweet(dict):
             raw_response = self.__raw_response
             if self.__raw_tweet.get("quoted_status_result"):
                 raw_tweet = self.__raw_tweet['quoted_status_result']['result']
-                return Tweet(raw_response, raw_tweet, self.http)
+                
+                # If the quoted tweet is deleted we don't try to fetch it
+                if raw_tweet['__typename'] != 'TextTombstone':
+                    return Tweet(raw_response, raw_tweet, self.http)
             try:
                 if not raw_tweet and self.__raw_tweet.get("legacy"):
                     raw_tweet = self.__raw_tweet['legacy']['retweeted_status_result']['result']['quoted_status_result']['result']
